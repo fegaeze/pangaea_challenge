@@ -1,17 +1,30 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useQuery } from '@apollo/client';
+
+import { ALL_PRODUCTS } from '../api/products';
 
 
 const Products = () => {
+
+  const { loading, error, data } = useQuery(ALL_PRODUCTS);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
+
   return (
     <StyledContainer>
       <ul>
-        <li>
-          <img src="https://cdn.shopify.com/s/files/1/2960/5204/products/age-management_1024x1024_ad6e7a36-7242-469c-9fb5-242f5ee9c83f_1024x1024.png?v=1602809968" alt="Age Management Set" />
-          <h2>Age Management Set</h2>
-          <p>From: $52.00</p>
-          <button>Add to Cart</button>
-        </li>
+        {
+          data.products.map(({ id, title, image_url, price}) => (
+            <li key={id}>
+              <img src={image_url} alt={title} />
+              <h2>{title}</h2>
+              <p>From: ${price}</p>
+              <button>Add to Cart</button>
+            </li>
+          ))
+        }
       </ul>
     </StyledContainer>
   );
@@ -37,27 +50,29 @@ const StyledContainer = styled.main`
   li {
     text-align: center;
     width: calc(50% - 7.5px);
-    margin: 3.5rem 0;
+    margin: 2rem 0;
 
     @media (min-width: 768px) {
       width: 33.33%;
+      margin: 3.5rem 0;
     }
 
     img {
       object-fit: contain;
-      max-width: 100%;
-      max-height: 170px;
-      flex: 1 1 0%;
+      max-width: 150px;
+      max-height: 150px;
+      height: 100%;
+      width: 100%;
     }
 
     h2 {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 300;
       margin-top: 2rem;
     }
 
     p {
-      font-size: 1rem;
+      font-size: .95rem;
       margin-top: .4rem;
     }
 

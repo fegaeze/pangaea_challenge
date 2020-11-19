@@ -1,16 +1,24 @@
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+
 import Header from './components/Header';
 import Products from './components/Products';
 
 
-function App() {
+const client = new ApolloClient({
+  uri: 'https://pangaea-interviews.now.sh/api/graphql',
+  cache: new InMemoryCache()
+});
+
+
+const App = () => {
   return (
-    <>
+    <ApolloProvider client={client}>
       <GlobalStyle />
       <Header/>
       <Products />
-    </>
+    </ApolloProvider>
   );
 }
 
