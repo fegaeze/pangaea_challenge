@@ -1,31 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@apollo/client';
 
+import Cart from './Cart';
 import { ALL_PRODUCTS } from '../api/products';
 
 
 const Products = () => {
 
+  const [ isOpen, setOpen ] = useState(false)
   const { loading, error, data } = useQuery(ALL_PRODUCTS);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [])
+
+  const addToCart = () => {
+    setOpen(true);
+  }
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
+  if(!data) return <p>No Data</p>
 
   return (
     <StyledContainer>
       <ul>
         {
           data.products.map(({ id, title, image_url, price}) => (
-            <li key={id}>
+            <li className="product-item" key={id}>
               <img src={image_url} alt={title} />
               <h2>{title}</h2>
               <p>From: ${price}</p>
-              <button>Add to Cart</button>
+              <button type="button" onClick={addToCart}>Add to Cart</button>
             </li>
           ))
         }
       </ul>
+      <Cart open={isOpen} setOpen={setOpen} />
     </StyledContainer>
   );
 }
@@ -47,10 +59,18 @@ const StyledContainer = styled.main`
     justify-content: space-between;
   }
 
-  li {
+  li.product-item {
     text-align: center;
     width: calc(50% - 7.5px);
     margin: 2rem 0;
+
+    &:nth-of-type(-n + 3) {
+      margin-top: 1rem;
+    }
+
+    &:nth-last-of-type(-n + 3) {
+      margin-bottom: 1rem;
+    }
 
     @media (min-width: 768px) {
       width: 33.33%;
@@ -65,18 +85,18 @@ const StyledContainer = styled.main`
       width: 100%;
     }
 
-    h2 {
-      font-size: 0.9rem;
-      font-weight: 300;
+    & > h2 {
+      font-size: 0.85rem;
+      font-weight: 400;
       margin-top: 2rem;
     }
 
-    p {
-      font-size: .95rem;
+    & > p {
+      font-size: 1rem;
       margin-top: .4rem;
     }
 
-    button {
+    & > button {
       margin-top: 1.5rem;
       transition: all 250ms ease 0s;
       outline: none;

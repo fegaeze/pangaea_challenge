@@ -1,15 +1,10 @@
 import React from 'react';
+import { ApolloProvider } from '@apollo/client';
 import { createGlobalStyle } from 'styled-components';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
+import { client } from './utils/apollo';
 import Header from './components/Header';
 import Products from './components/Products';
-
-
-const client = new ApolloClient({
-  uri: 'https://pangaea-interviews.now.sh/api/graphql',
-  cache: new InMemoryCache()
-});
 
 
 const App = () => {
@@ -33,6 +28,12 @@ const GlobalStyle = createGlobalStyle`
     font-size: 16px;
     background: #E2E6E3;
     font-family: 'Open Sans', sans-serif;
+  }
+
+  button {
+    cursor: pointer;
+    border: none;
+    outline: none;
   }
 `
 

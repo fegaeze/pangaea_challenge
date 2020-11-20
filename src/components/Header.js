@@ -29,10 +29,11 @@ const StyledContainer = styled.header`
     h1 {
       font-family: 'Lora', serif;
       font-weight: 400;
+      font-size: 2.5rem;
     }
 
     p {
-      font-size: 0.85rem;
+      font-size: 1rem;
       margin-top: .5rem;
     }
   }
