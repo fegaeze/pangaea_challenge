@@ -1,13 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useReactiveVar } from '@apollo/client';
+
+import { cartTotalVar } from '../../api/cache';
 
 
 const CartFooter = () => {
+
+  const cartTotal = useReactiveVar(cartTotalVar);
+
   return (
     <StyledContainer>
       <div className="cart-total">
         <p>Subtotal</p>
-        <p>US$81.00</p>
+        <p>US${cartTotal.toFixed(2)}</p>
       </div>
 
       <div className="cart-action-btns">

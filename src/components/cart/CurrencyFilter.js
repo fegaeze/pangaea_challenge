@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@apollo/client';
 
-import { ALL_CURRENCIES } from '../api/currencies';
+import { ALL_CURRENCIES } from '../../api/queries/cart';
 
 
 const CurrencyFilter = () => {

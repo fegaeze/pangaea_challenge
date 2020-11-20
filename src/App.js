@@ -2,9 +2,9 @@ import React from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { createGlobalStyle } from 'styled-components';
 
-import { client } from './utils/apollo';
+import { client } from './api/cache';
 import Header from './components/Header';
-import Products from './components/Products';
+import Products from './components/products';
 
 
 const App = () => {

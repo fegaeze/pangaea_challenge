@@ -1,22 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useQuery } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 
-import Cart from './Cart';
-import { ALL_PRODUCTS } from '../api/products';
+import Cart from '../cart';
+import CartHeader from '../cart/CartHeader';
+import { cartItemsVar } from '../../api/cache';
+import { ALL_PRODUCTS } from '../../api/queries/products';
+import { addNewCartItem, updateCartQuantity } from '../../api/mutations/cart';
 
 
 const Products = () => {
 
-  const [ isOpen, setOpen ] = useState(false)
+  const [ isOpen, setOpen ] = useState(false);
+  const cartItems = useReactiveVar(cartItemsVar);
   const { loading, error, data } = useQuery(ALL_PRODUCTS);
 
   useEffect(() => {
     setOpen(false);
   }, [])
 
-  const addToCart = () => {
+  const addToCart = (product) => {
+
     setOpen(true);
+    const productExists = cartItems.findIndex(cartItem => cartItem.id === product.id);
+
+    if(productExists !== -1) {
+      updateCartQuantity(product.id, "INCREASE");
+    } else {
+      addNewCartItem(product);
+    }
   }
 
   if (loading) return <p>Loading...</p>;
@@ -27,17 +39,20 @@ const Products = () => {
     <StyledContainer>
       <ul>
         {
-          data.products.map(({ id, title, image_url, price}) => (
-            <li className="product-item" key={id}>
-              <img src={image_url} alt={title} />
-              <h2>{title}</h2>
-              <p>From: ${price}</p>
-              <button type="button" onClick={addToCart}>Add to Cart</button>
+          data.products.map(product => (
+            <li className="product-item" key={product.id}>
+              <img src={product.image_url} alt={product.title} />
+              <h2>{product.title}</h2>
+              <p>From: ${product.price.toFixed(2)}</p>
+              <button type="button" onClick={() => addToCart(product)}>Add to Cart</button>
             </li>
           ))
         }
       </ul>
-      <Cart open={isOpen} setOpen={setOpen} />
+      
+      <Cart open={isOpen}>
+        <CartHeader setOpen={setOpen} />
+      </Cart>
     </StyledContainer>
   );
 }
