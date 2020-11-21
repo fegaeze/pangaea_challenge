@@ -1,13 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useQuery } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 
-import { ALL_CURRENCIES } from '../../api/queries/cart';
+import { baseCurrencyVar } from '../../api/cache';
+import { allCurrenciesQuery } from '../../api/queries/cart';
 
 
-const CurrencyFilter = () => {
+const CurrencyFilter = ({ getUpdatedPrices }) => {
 
-  const { loading, error, data } = useQuery(ALL_CURRENCIES);
+  const baseCurrency = useReactiveVar(baseCurrencyVar);
+  const { loading, error, data } = useQuery(allCurrenciesQuery);
+
+  const handleChange = e => {
+    getUpdatedPrices({
+      variables: { 
+        currency: e.target.value
+      }
+    })
+  }
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
@@ -15,10 +25,10 @@ const CurrencyFilter = () => {
 
 
   return (
-    <StyledSelect>
+    <StyledSelect value={baseCurrency} onChange={(e) => handleChange(e)}>
       {
         data.currency.map((currency) => (
-          <option key={currency}>{currency}</option>
+          <option value={currency} key={currency}>{currency}</option>
         ))
       }
     </StyledSelect>

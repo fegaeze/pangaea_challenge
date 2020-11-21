@@ -2,10 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 
 import ArrowRight from '../svg/ArrowRight';
-import CurrencyFilter from './CurrencyFilter';
 
 
-const CartHeader = ({ setOpen }) => {
+const CartHeader = ({ setOpen, children }) => {
+
+  const CurrencyFilter = children;
+
   return (
     <StyledContainer>
       <div>
@@ -16,7 +18,7 @@ const CartHeader = ({ setOpen }) => {
         <h2>Your Cart</h2>
       </div>
 
-      <CurrencyFilter />
+      {CurrencyFilter}
     </StyledContainer>
   );
 }

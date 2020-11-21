@@ -1,24 +1,49 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { useLazyQuery } from '@apollo/client';
 
 import CartItems from './CartItems';
 import CartFooter from './CartFooter';
+import CartHeader from './CartHeader';
+import CurrencyFilter from './CurrencyFilter';
+import { baseCurrencyVar, client } from '../../api/cache';
+import { updateCartPrices } from '../../api/mutations/cart';
+import { allProductsQuery } from '../../api/queries/products';
 
 
-const Cart = ({ open, children }) => {
+const Cart = ({ open, setOpen }) => {
 
-  const CartHeader = children;
+  const [getUpdatedPrices, { variables, loading, data }] = useLazyQuery(allProductsQuery);
   
   useEffect(() => {
     if(open) document.body.style.overflow = 'hidden';
     return () => document.body.style.overflow = 'unset';
   }, [open]);
 
+  useEffect(() => {
+    if (data) {
+      const newProducts = data.products;
+      const { currency } = variables;
+      const query = allProductsQuery;
+
+      baseCurrencyVar(currency);
+      updateCartPrices(newProducts);
+
+      client.writeQuery({
+        query,
+        data: {
+          products: newProducts,
+        },
+      });
+    }
+  }, [data, variables])
 
   return (
     <StyledContainer className={open ? "open" : null}>
       <div>
-        {CartHeader}
+        <CartHeader setOpen={setOpen}>
+          <CurrencyFilter products={data} getUpdatedPrices={getUpdatedPrices} />
+        </CartHeader>
         <CartItems />
         <CartFooter />
       </div>

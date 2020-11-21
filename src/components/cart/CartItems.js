@@ -1,26 +1,27 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useReactiveVar } from '@apollo/client';
+import { useQuery } from '@apollo/client';
+import getSymbolFromCurrency from 'currency-symbol-map';
 
-import { cartItemsVar } from '../../api/cache';
 import QuantitySelector from './QuantitySelector';
+import { allCartItemsQuery } from '../../api/queries/cart';
 import { deleteCartItem } from '../../api/mutations/cart';
 
 
 const CartItems = () => {
 
-  const cartItems = useReactiveVar(cartItemsVar);
+  const { loading, error, data } = useQuery(allCartItemsQuery);
 
   return (
     <StyledCartItems>
       {
-        cartItems && cartItems.map(({id, title, image_url, price, quantity}) => (
+        data && data.cartItems.map(({id, title, image_url, price, quantity, baseCurrencyQuery}) => (
           <li className="cart-item" key={id}>
             <div className="cart-item-content">
               <h3>{title}</h3>
               <div>
                 <QuantitySelector quantity={quantity} id={id} />
-                <p>{price.toFixed(2)}</p>
+                <p>{getSymbolFromCurrency(baseCurrencyQuery)}{price.toFixed(2)}</p>
               </div>
             </div>
             <div className="cart-item-image">

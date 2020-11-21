@@ -1,26 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import getSymbolFromCurrency from 'currency-symbol-map';
 import { useQuery, useReactiveVar } from '@apollo/client';
 
 import Cart from '../cart';
-import CartHeader from '../cart/CartHeader';
-import { cartItemsVar } from '../../api/cache';
-import { ALL_PRODUCTS } from '../../api/queries/products';
+import { allProductsQuery } from '../../api/queries/products';
+import { baseCurrencyVar, cartItemsVar } from '../../api/cache';
 import { addNewCartItem, updateCartQuantity } from '../../api/mutations/cart';
 
 
 const Products = () => {
 
   const [ isOpen, setOpen ] = useState(false);
+
   const cartItems = useReactiveVar(cartItemsVar);
-  const { loading, error, data } = useQuery(ALL_PRODUCTS);
+  const baseCurrency = useReactiveVar(baseCurrencyVar);
+  
+  const { loading, error, data } = useQuery(allProductsQuery);
 
-  useEffect(() => {
-    setOpen(false);
-  }, [])
 
-  const addToCart = (product) => {
-
+  const handleAddToCart = product => {
     setOpen(true);
     const productExists = cartItems.findIndex(cartItem => cartItem.id === product.id);
 
@@ -39,20 +38,18 @@ const Products = () => {
     <StyledContainer>
       <ul>
         {
-          data.products.map(product => (
+          data && data.products.map(product => (
             <li className="product-item" key={product.id}>
               <img src={product.image_url} alt={product.title} />
               <h2>{product.title}</h2>
-              <p>From: ${product.price.toFixed(2)}</p>
-              <button type="button" onClick={() => addToCart(product)}>Add to Cart</button>
+              <p>From: {getSymbolFromCurrency(baseCurrency)}{product.price.toFixed(2)}</p>
+              <button type="button" onClick={() => handleAddToCart(product)}>Add to Cart</button>
             </li>
           ))
         }
       </ul>
       
-      <Cart open={isOpen}>
-        <CartHeader setOpen={setOpen} />
-      </Cart>
+      <Cart open={isOpen} setOpen={setOpen} />
     </StyledContainer>
   );
 }
