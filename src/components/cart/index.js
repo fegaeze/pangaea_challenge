@@ -13,7 +13,7 @@ import { allProductsQuery } from '../../api/queries/products';
 
 const Cart = ({ open, setOpen }) => {
 
-  const [getUpdatedPrices, { variables, loading, data }] = useLazyQuery(allProductsQuery);
+  const [getUpdatedPrices, { variables, data }] = useLazyQuery(allProductsQuery);
   
   useEffect(() => {
     if(open) document.body.style.overflow = 'hidden';

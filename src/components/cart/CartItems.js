@@ -1,21 +1,21 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useQuery } from '@apollo/client';
+import { useReactiveVar } from '@apollo/client';
 import getSymbolFromCurrency from 'currency-symbol-map';
 
+import { cartItemsVar } from '../../api/cache';
 import QuantitySelector from './QuantitySelector';
-import { allCartItemsQuery } from '../../api/queries/cart';
 import { deleteCartItem } from '../../api/mutations/cart';
 
 
 const CartItems = () => {
-
-  const { loading, error, data } = useQuery(allCartItemsQuery);
+  
+  const cartItems = useReactiveVar(cartItemsVar);
 
   return (
     <StyledCartItems>
       {
-        data && data.cartItems.map(({id, title, image_url, price, quantity, baseCurrencyQuery}) => (
+        cartItems.map(({id, title, image_url, price, quantity, baseCurrencyQuery}) => (
           <li className="cart-item" key={id}>
             <div className="cart-item-content">
               <h3>{title}</h3>

@@ -1,21 +1,20 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useQuery } from '@apollo/client';
+import { useReactiveVar } from '@apollo/client';
 import getSymbolFromCurrency from 'currency-symbol-map';
 
-import { cartTotalQuery } from '../../api/queries/cart';
-
+import { cartTotalVar } from '../../api/cache';
 
 
 const CartFooter = () => {
-
-  const { loading, data, error } = useQuery(cartTotalQuery)
+  
+  const cartTotal = useReactiveVar(cartTotalVar);
 
   return (
     <StyledContainer>
       <div className="cart-total">
         <p>Subtotal</p>
-        <p>{getSymbolFromCurrency(data.cartTotal.currency)}{data.cartTotal.amount.toFixed(2)}</p>
+        <p>{getSymbolFromCurrency(cartTotal.currency)}{cartTotal.amount.toFixed(2)}</p>
       </div>
 
       <div className="cart-action-btns">

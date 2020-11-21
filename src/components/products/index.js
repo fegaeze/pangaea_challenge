@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import ReactPlaceholder from 'react-placeholder';
 import getSymbolFromCurrency from 'currency-symbol-map';
 import { useQuery, useReactiveVar } from '@apollo/client';
 
 import Cart from '../cart';
+import GridLoader from '../GridLoader';
 import { allProductsQuery } from '../../api/queries/products';
 import { baseCurrencyVar, cartItemsVar } from '../../api/cache';
 import { addNewCartItem, updateCartQuantity } from '../../api/mutations/cart';
 
 
 const Products = () => {
-
   const [ isOpen, setOpen ] = useState(false);
 
   const cartItems = useReactiveVar(cartItemsVar);
@@ -30,24 +31,29 @@ const Products = () => {
     }
   }
 
-  if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
-  if(!data) return <p>No Data</p>
 
   return (
     <StyledContainer>
-      <ul>
-        {
-          data && data.products.map(product => (
-            <li className="product-item" key={product.id}>
-              <img src={product.image_url} alt={product.title} />
-              <h2>{product.title}</h2>
-              <p>From: {getSymbolFromCurrency(baseCurrency)}{product.price.toFixed(2)}</p>
-              <button type="button" onClick={() => handleAddToCart(product)}>Add to Cart</button>
-            </li>
-          ))
-        }
-      </ul>
+      <ReactPlaceholder 
+        ready={data} 
+        customPlaceholder={<GridLoader />}
+      >
+        <ul>
+          {
+            data && !loading ?
+              data.products.map(product => (
+                <li className="product-item" key={product.id}>
+                  <img src={product.image_url} alt={product.title} />
+                  <h2>{product.title}</h2>
+                  <p>From: {getSymbolFromCurrency(baseCurrency)}{product.price.toFixed(2)}</p>
+                  <button type="button" onClick={() => handleAddToCart(product)}>Add to Cart</button>
+                </li>
+              ))
+            : <p>No Data</p>
+          }
+        </ul>
+      </ReactPlaceholder>
       
       <Cart open={isOpen} setOpen={setOpen} />
     </StyledContainer>
